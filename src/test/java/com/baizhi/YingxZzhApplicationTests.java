@@ -180,4 +180,9 @@ class YingxZzhApplicationTests {
         user.setNickName("11");
         userService.add(user);
     }
+    @Test
+    void aaa(){
+        int a = 1;
+        int b = 2;
+    }
 }

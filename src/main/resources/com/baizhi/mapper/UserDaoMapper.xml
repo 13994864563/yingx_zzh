@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.dao.UserDao">
+
+    <!--分页查询-->
+    <select id="queryAll" resultType="User">
+      select id,pic_img picImg,nick_name nickName,phone,brief,create_date createDate,status
+      from yx_user
+      limit #{begin },#{rows }
+    </select>
+    <!--查询总条数-->
+    <select id="queryCount" resultType="Integer">
+        select count(id) from  yx_user
+    </select>
+    <!--修改-->
+    <update id="update" parameterType="User">
+        update yx_user
+        <set>
+            <if test="picImg!=null">pic_img=#{picImg},</if>
+            <if test="nickName!=null">nick_name=#{nickName},</if>
+            <if test="phone!=null">phone=#{phone},</if>
+            <if test="brief!=null">brief=#{brief},</if>
+            <if test="createDate!=null">create_date=#{createDate},</if>
+            <if test="status!=null">status=#{status}</if>
+        </set>
+        where id=#{id}
+    </update>
+    <!--查一个-->
+    <select id="queryOne" parameterType="String" resultType="User">
+        select id,pic_img picImg,nick_name nickName,phone,brief,create_date createDate,status
+        from yx_user
+        where id = #{id}
+    </select>
+
+    <!--添加-->
+    <insert id="addAliyun" parameterType="User">
+        insert into yx_user
+        values (#{id},#{picImg},#{nickName},#{phone},#{brief},#{createDate},#{status},#{scoreId})
+    </insert>
+
+    <select id="selectAllPoiexport" resultType="User">
+        select id,pic_img picImg,nick_name nickName,phone,brief,create_date createDate,status
+      from yx_user
+    </select>
+
+    <!--查询用户在几月注册的数量-->
+    <select id="queryMouth" resultType="Mc">
+      select concat(month(create_date),'月') mouth,count(id) counts
+      from yx_user
+      where sex=#{sex} and month(create_date) like #{mouth}
+      group by month(create_date)
+    </select>
+
+    <!--查询在地区用户创建的数量-->
+    <select id="queryCity" parameterType="String" resultType="City">
+      select city name,count(id) value
+      from  yx_user
+      where sex=#{sex}
+      group by city
+    </select>
+</mapper>

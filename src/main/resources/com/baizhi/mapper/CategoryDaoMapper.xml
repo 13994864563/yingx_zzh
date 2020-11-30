@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.dao.CategoryDao">
+
+    <!--查询所有的一级类别-->
+    <select id="queryAllOneCate" resultType="Category">
+        select id,cate_name cateName,levels,parent_id parentId
+        from yx_category
+        where levels = #{levels}
+        limit #{begin },#{end }
+    </select>
+    <!--查询总条数-->
+    <select id="queryCount" resultType="Integer">
+        select count(id) from yx_category
+    </select>
+    <!--查询所有的一级类别下的二级类别-->
+    <select id="queryAllTwoCate" resultType="Category">
+        select id,cate_name cateName,levels,parent_id parentId
+        from yx_category
+        where levels = #{levels} and parent_id=#{id}
+        limit #{begin },#{end }
+    </select>
+    <!--查询二级类别的总条数-->
+    <select id="queryCountTwo" resultType="Integer">
+        select count(id) from yx_category
+        where parent_id=#{id}
+    </select>
+
+    <!--添加一级类别-->
+    <insert id="addOneCate" parameterType="Category">
+        insert into yx_category
+        values (#{id},#{cateName},#{levels},#{parentId})
+    </insert>
+    <!--查所有一级-->
+    <select id="queryAllOne" resultType="Category" parameterType="Integer">
+        select id,cate_name cateName,levels,parent_id parentId
+        from yx_category
+        where levels=#{levels}
+    </select>
+    <!--添加二级类别-->
+    <insert id="addTwoCate" parameterType="Category">
+        insert into yx_category
+        values (#{id},#{cateName},#{levels},#{parentId})
+    </insert>
+
+    <!--修改一级或二级类别-->
+    <update id="updateOneCate" parameterType="Category">
+        update yx_category
+        <set>
+            <if test="cateName!=null">cate_name=#{cateName},</if>
+            <if test="levels!=null">levels=#{levels},</if>
+            <if test="parentId!=null">parent_id=#{parentId}</if>
+        </set>
+        where id = #{id}
+    </update>
+    <!--删除-->
+    <delete id="delete" parameterType="String">
+        delete from yx_category
+        where id = #{id}
+    </delete>
+    <!--根据id查一个-->
+    <select id="queryById" resultType="Category">
+        select id,cate_name cateName,levels,parent_id parentId
+        from yx_category
+        where id = #{id}
+    </select>
+
+
+
+    <!--查询-->
+    <resultMap id="cate" type="Category">
+        <id column="id" property="id"/>
+        <result column="cateName" property="cateName"/>
+        <result column="levels" property="levels"/>
+        <result column="parentId" property="parentId"/>
+        <collection property="categoryList" ofType="Category">
+            <id column="cId" property="id"/>
+            <result column="cCateName" property="cateName"/>
+            <result column="cLevels" property="levels"/>
+            <result column="cParentId" property="parentId"/>
+        </collection>
+    </resultMap>
+
+    <select id="queryAllCategory" resultMap="cate">
+        select c.id,c.cate_name cateName,c.levels,c.parent_id parentId,
+               c1.id cId,c1.cate_name cCateName,c1.levels cLevels,c1.parent_id cParentId
+        from yx_category c left join yx_category c1
+        on c.id = c1.parent_id
+        where c.levels=1
+    </select>
+</mapper>
